@@ -1,5 +1,4 @@
 #include "utils.h"
-
 #define CHARS_PER_LINE  16
 
 void
@@ -232,4 +231,35 @@ HANDLE createFile(LPCSTR fileName) //TODO: Interpret errors
 	}
 
 	return fileHandle;
+}
+
+BOOL pathTraversal(char* path)
+{
+	int nrOfDot = 0;
+	int nrOfSlash = 0;
+	int i = 0;
+	while (sizeof(path) != i)
+	{
+		if (path[i] == '.')
+		{
+			nrOfDot++;
+		}
+
+		if (path[i] == '/' || path[i] == '\\')
+		{
+			nrOfSlash++;
+		}
+		i++;
+	}
+
+	if (nrOfDot > 1)
+	{
+		return TRUE;
+	}
+	else if (nrOfSlash > 0)
+	{
+		return TRUE;
+	}
+
+	return FALSE;
 }

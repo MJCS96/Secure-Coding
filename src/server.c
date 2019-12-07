@@ -225,9 +225,15 @@ BOOLEAN InterpretCommand(
 				SetReply(Output, OutLength, "[ERROR] No message name provided.");
 				return TRUE;
 			}
-
-			CmdHandleCreateMsg(Parameter, *UserId);
-			SetReply(Output, OutLength, "[OK] File created.");
+			if (!pathTraversal(Parameter))
+			{
+				CmdHandleCreateMsg(Parameter, *UserId);
+				SetReply(Output, OutLength, "[OK] File created.");
+			}
+			else 
+			{
+				SetReply(Output, OutLength, "[ERROR] The input is incorrect.");
+			}
 			return TRUE;
 		}
     }
