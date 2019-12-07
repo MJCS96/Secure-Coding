@@ -23,6 +23,7 @@ typedef enum {
 #define CMD_GET         "get"
 #define CMD_AVAIL       "avail"
 #define CMD_INFO        "info"
+#define CMD_CREATE_MSG	"createmsg"
 
 extern DWORD gUserCount;
 extern USER_DATA gUserData[10];
@@ -69,5 +70,7 @@ CmdHandleGet(
     char *Output,
     int *OutLength
 );
+
+HANDLE CmdHandleCreateMsg(char* filePath, int UserId);
 
 #endif _SERVER_H_

@@ -206,3 +206,30 @@ Cleanup:
 
     return result;
 }
+
+HANDLE createFile(LPCSTR fileName) //TODO: Interpret errors
+{
+	if (NULL == fileName)
+	{
+		return (HANDLE)ERROR_INVALID_PARAMETER;
+	}
+
+	HANDLE fileHandle;
+	fileHandle = CreateFileA(
+		fileName,
+		GENERIC_WRITE,
+		FILE_SHARE_WRITE,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+
+	if (INVALID_HANDLE_VALUE == fileHandle)
+	{
+		CloseHandle(fileHandle);
+		return (HANDLE)ERROR_INVALID_HANDLE;
+	}
+
+	return fileHandle;
+}

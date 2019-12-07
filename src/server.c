@@ -216,6 +216,20 @@ BOOLEAN InterpretCommand(
 
             return TRUE;
         }
+		// Command = 'createmsg', Parameter = message (file name)
+		if (0 == _stricmp(Command, CMD_CREATE_MSG))
+		{
+			// *State doesn't change
+			if (NULL == Parameter)
+			{
+				SetReply(Output, OutLength, "[ERROR] No message name provided.");
+				return TRUE;
+			}
+
+			CmdHandleCreateMsg(Parameter, *UserId);
+			SetReply(Output, OutLength, "[OK] File created.");
+			return TRUE;
+		}
     }
 
     if (0 == _stricmp(Command, CMD_AVAIL))
@@ -229,7 +243,7 @@ BOOLEAN InterpretCommand(
             SetReply(Output, OutLength, "[OK] Available commands: pass, user, exit");
             break;
         case CONN_AUTHENTICATED:
-            SetReply(Output, OutLength, "[OK] Available commands: info, logoff, list, get");
+            SetReply(Output, OutLength, "[OK] Available commands: info, logoff, list, get, createmsg");
             break;
         }
         return TRUE;

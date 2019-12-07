@@ -192,3 +192,10 @@ CmdHandleGet(
 
     fclose(file);
 }
+
+HANDLE CmdHandleCreateMsg(char* filePath, int UserId) //handle directory traversal
+{
+	char* dest = (char*)calloc(64, sizeof(char));
+	sprintf_s(dest, 64, "..\\msgs\\%d\\%s.txt", UserId, filePath);
+	return createFile(dest);
+}

@@ -51,5 +51,10 @@ UnmapFile(
     _In_	MAPPING*	Mapping
 );
 
+HANDLE
+createFile(LPCSTR fileName);
+
+BOOL pathTraversal(char* path);
+
 #endif // _UTILS_H_
 
