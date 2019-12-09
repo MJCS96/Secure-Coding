@@ -1,2 +1,2 @@
 # Secure-Coding
-Example of secure coding in C++
+Example of secure coding in C
