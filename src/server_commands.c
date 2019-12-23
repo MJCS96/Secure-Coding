@@ -195,7 +195,23 @@ CmdHandleGet(
 
 HANDLE CmdHandleCreateMsg(char* filePath, int UserId)
 {
-	char* dest = (char*)calloc(64, sizeof(char));
+    char directoryPath[10];
+    sprintf_s(directoryPath, 10, "..\\msgs\\%d", UserId);
+    BOOL newDirectory = CreateDirectoryA(
+        directoryPath,
+        NULL
+    );
+
+    if (ERROR_ALREADY_EXISTS == newDirectory) 
+    {
+        Log("Directory already exists %s\n", directoryPath);
+    }
+    else
+    {
+        Log("Directory created %s\n", directoryPath);
+    }
+	char dest[64];
 	sprintf_s(dest, 64, "..\\msgs\\%d\\%s.txt", UserId, filePath);
+ 
 	return createFile(dest);
 }
