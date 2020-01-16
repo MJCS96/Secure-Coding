@@ -198,7 +198,7 @@ DWORD TestMAP()
 
     /// now you can read from / write to the file like accessing a buffer
     printf("MapFile succeeded. First char = %c \n", map.Data[0]);   // read  
-    //map.Data[0] = 'a';                                              // write
+    map.Data[0] = 'a';                                              // write
 
 Cleanup:
     UnmapFile(&map);
@@ -206,7 +206,7 @@ Cleanup:
     return result;
 }
 
-HANDLE createFile(LPCSTR fileName) //TODO: Interpret errors
+HANDLE createFile(LPCSTR fileName) 
 {
 	if (NULL == fileName)
 	{
@@ -216,8 +216,8 @@ HANDLE createFile(LPCSTR fileName) //TODO: Interpret errors
 	HANDLE fileHandle;
 	fileHandle = CreateFileA(
 		fileName,
-		GENERIC_WRITE,
-		FILE_SHARE_WRITE,
+		GENERIC_WRITE|GENERIC_READ,
+		FILE_SHARE_READ,
 		NULL,
 		CREATE_ALWAYS,
 		FILE_ATTRIBUTE_NORMAL,
@@ -262,4 +262,122 @@ BOOL pathTraversal(char* path)
 	}
 
 	return FALSE;
+}
+DWORD
+MapFileHandle(
+	_In_	HANDLE		FileHandle,
+	_In_	DWORD		AccessRights,
+	_Out_	MAPPING* Mapping
+)
+{
+	printf("Entered\n");
+	DWORD result;
+	DWORD flProtect;
+	DWORD mapAccessRights;
+
+	if (NULL == FileHandle)
+	{
+		return ERROR_INVALID_PARAMETER;
+	}
+
+	if (NULL == Mapping)
+	{
+		return ERROR_INVALID_PARAMETER;
+	}
+
+	result = ERROR_SUCCESS;
+	Mapping->FileHandle = FileHandle;
+	Mapping->MapHandle = NULL;
+	Mapping->DataSize = 0;
+	Mapping->Data = NULL;
+
+	if (0 != (GENERIC_WRITE & AccessRights))
+	{
+		flProtect = PAGE_READWRITE;
+		mapAccessRights = FILE_MAP_READ | FILE_MAP_WRITE;
+	}
+	else
+	{
+		flProtect = PAGE_READONLY;
+		mapAccessRights = FILE_MAP_READ;
+	}
+
+	__try
+	{
+		if (INVALID_HANDLE_VALUE == Mapping->FileHandle)
+		{
+			printf("Invalid handle value\n");
+			result = GetLastError();
+			__leave;
+		}
+
+		Mapping->MapHandle = CreateFileMapping(Mapping->FileHandle,
+			NULL,
+			PAGE_READWRITE,
+			0,
+			0,
+			NULL);
+		if (NULL == Mapping->MapHandle)
+		{
+			printf("MapHandle is null\n");
+			result = GetLastError();
+			__leave;
+		}
+
+		Mapping->Data = MapViewOfFile(Mapping->MapHandle,
+			mapAccessRights,
+			0,
+			0,
+			0);
+		if (NULL == Mapping->Data)
+		{
+			printf("map data is null\n");
+			result = GetLastError();
+			__leave;
+		}
+
+
+		if (!GetFileSizeEx(Mapping->FileHandle, (PLARGE_INTEGER)&Mapping->DataSize))
+		{
+			result = GetLastError();
+			__leave;
+		}
+	}
+	__finally
+	{
+		if (ERROR_SUCCESS != result)
+		{
+			UnmapFile(Mapping);
+		}
+	}
+
+	return result;
+}
+
+DWORD TestMAPHandle(HANDLE FileHandle)
+{
+	MAPPING map;
+	DWORD result;
+
+	result = ERROR_SUCCESS;
+
+	result = MapFileHandle(FileHandle,                     //nume
+		GENERIC_WRITE,                //drepturi
+		&map);
+	if (ERROR_SUCCESS != result)
+	{
+		printf("MapFile failed with result %u\n", result);
+		goto Cleanup;
+	}
+	/// now you can read from / write to the file like accessing a buffer
+	printf("Entered %llx\n", map.DataSize);
+
+	//map.Data[0] = 'a';                                              // write
+	printf("MapFile succeeded. First char = %c \n", map.Data[0]);   // read  
+	
+
+Cleanup:
+	UnmapFile(&map);
+
+	return result;
 }

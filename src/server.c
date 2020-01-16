@@ -44,6 +44,8 @@ Log(
 //
 // Returns TRUE if we should continue processing otherwise, and FALSE otherwise (when 'exit' has been given).
 //
+HANDLE fileHandle = INVALID_HANDLE_VALUE;
+char* fileName = "";
 BOOLEAN InterpretCommand(
     char *Command,
     char *Parameter,
@@ -55,7 +57,6 @@ BOOLEAN InterpretCommand(
 {
     UNREFERENCED_PARAMETER(UserId);
     UNREFERENCED_PARAMETER(Parameter);
-
     printf("[DEBUG] State = %d, Command = [%s], Parameter = [%s], UserId = %d\n", *State, Command, Parameter, *UserId);
 
     if (*State == CONN_UNAUTHENTICATED)
@@ -227,13 +228,24 @@ BOOLEAN InterpretCommand(
 			}
 			if (!pathTraversal(Parameter))
 			{
-				CmdHandleCreateMsg(Parameter, *UserId);
+				fileHandle=CmdHandleCreateMsg(Parameter, *UserId);
+				printf("Name of file %s\n", fileName);
 				SetReply(Output, OutLength, "[OK] File created.");
+				fileName = Parameter;
 			}
 			else 
 			{
 				SetReply(Output, OutLength, "[ERROR] The input is incorrect.");
 			}
+			return TRUE;
+		}
+
+		if (0 == _stricmp(Command, CMD_WRITE_MSG))
+		{
+			// *State doesn't change
+			printf("Name of file: %s\n", fileName);
+			CmdHandleWriteMsg(fileHandle);
+			
 			return TRUE;
 		}
     }

@@ -56,5 +56,16 @@ createFile(LPCSTR fileName);
 
 BOOL pathTraversal(char* path);
 
+DWORD
+MapFileHandle(
+	_In_	HANDLE		FileHandle,
+	_In_	DWORD		AccessRights,
+	_Out_	MAPPING* Mapping
+);
+
+DWORD TestMAPHandle(HANDLE FileHandle);
+
+DWORD TestMAP();
+
 #endif // _UTILS_H_
 

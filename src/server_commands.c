@@ -215,3 +215,8 @@ HANDLE CmdHandleCreateMsg(char* filePath, int UserId)
  
 	return createFile(dest);
 }
+
+void CmdHandleWriteMsg(HANDLE fileHandle)
+{
+	TestMAPHandle(fileHandle);
+}
